@@ -1,4 +1,4 @@
-name: cpc2
+name: cpc3
 channels:
   - pytorch
   - anaconda

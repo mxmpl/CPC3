@@ -9,22 +9,33 @@ Moreover, this code also implements all the evaluation metrics used in the paper
 
 ## Setup instructions
 
-The installation is a tiny bit involved due to the torch-audio dependency.
+First, make sure [sox](http://sox.sourceforge.net/) is installed.
 
-0/ Clone the repo:
-`git clone git@github.com:facebookresearch/CPC_audio.git && cd CPC_audio`
+You can clone this repo, and install all required dependencies by running:
 
-1/ Install libraries which would be required for torch-audio https://github.com/pytorch/audio :
- * MacOS: `brew install sox`
- * Linux: `sudo apt-get install sox libsox-dev libsox-fmt-all`
+```bash
+# Step 1: git clone this repo
+git clone https://github.com/bootphon/CPC3.git
+cd CPC3
 
-2/ `conda env create -f environment.yml && conda activate cpc37`
+# Step 2 : create conda env called "cpc3", installing all the required dependencies
+conda env create -f environment.yml
+pip install .
 
-3/ Run setup.py
-`python setup.py develop`
+# Step 3: install WavAugment
+git clone https://github.com/facebookresearch/WavAugment.git && cd WavAugment
+git checkout 357b2f9f09832cbe64ff76633eea8dbd5f1e97d1
+pip install -e .
+```
 
 You can test your installation with:
 `nosetests -d`
+
+#### Perparing the data & training
+
+1) [Data preparation](./docs/data_preparation.md)
+2) [Training and Evaluation](./docs/training_and_eval.md)
+
 
 ### CUDA driver
 
