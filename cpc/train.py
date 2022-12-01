@@ -9,6 +9,7 @@ import random
 import sys
 import time
 from copy import deepcopy
+from pathlib import Path
 
 import cpc.criterion as cr
 import cpc.feature_loader as fl
@@ -491,8 +492,7 @@ def main(argv):
 
     # Checkpoint
     if args.pathCheckpoint is not None:
-        if not os.path.isdir(args.pathCheckpoint):
-            os.mkdir(args.pathCheckpoint)
+        Path(args.pathCheckpoint).mkdir(exist_ok=True)
         args.pathCheckpoint = os.path.join(args.pathCheckpoint, "checkpoint")
         if args.is_local_master:
             with open(args.pathCheckpoint + "_args.json", 'w') as file:

@@ -138,7 +138,7 @@ def init_distributed_mode(params):
         print("Initializing PyTorch distributed ...")
         torch.distributed.init_process_group(
             init_method='env://',
-            backend='nccl',
+            backend='gloo',
         )
 
 
