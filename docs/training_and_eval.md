@@ -4,9 +4,9 @@ To train a CPC model with data augmentation, and same speaker sampling:
  
 ```bash
 python cpc/train.py --pathDB /path/to/data --pathCheckpoint /path/to/output  --file_extension .wav \
-  --n-levels-gru=2 --multihead-rnn --scheduler-ramp=10 --save-step=5 --n-process-loader=1 \
-  --max-size-loaded=4000000000 --no-artefacts --nb-epochs=200 --augment-past --augment-type=pitch,artificial_reverb \
-  --sampling-type=samespeaker
+  --nLevelsGRU 2 --multihead_rnn --schedulerRamp 10 --save_step 5 --n_process_loader 1 \
+  --max_size_loaded 4000000000 --no_artefacts --nEpoch 200 --augment_past --augment_type pitch artificial_reverb \
+  --samplingType samespeaker
 ```
 
 where `/path/to/data` contains audio segments organized as in the [data preparation](../docs/data_preparation.md) section
