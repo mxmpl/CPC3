@@ -4,6 +4,7 @@
 # LICENSE file in the root directory of this source tree.
 import argparse
 import sys
+import pickle
 import torch
 import json
 from pathlib import Path
@@ -229,7 +230,8 @@ def main(argv):
     with open(path_args, 'w') as file:
         json.dump(vars(args), file, indent=2)
 
-    torch.save(extras, out_dir / "extras.pt")
+    with open(out_dir / "extras.pkl", "wb") as file:
+        pickle.dump(extras)
 
 
 if __name__ == "__main__":
