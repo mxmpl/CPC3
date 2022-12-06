@@ -31,6 +31,7 @@ def ABX(feature_function,
     # ABX dataset
     ABXDataset = abx_it.ABXFeatureLoader(path_item_file, seq_list,
                                          feature_function, step_feature, normalize)
+    extras = {"phone_match": ABXDataset.phone_match}
 
     if cuda:
         ABXDataset.cuda()
@@ -65,6 +66,8 @@ def ABX(feature_function,
 
         scores['within'] = (phone_confusion.sum() /
                             (divisor_speaker > 0).sum()).item()
+        extras["group_confusion_within"] = group_confusion
+        extras["phone_confusion_within"] = phone_confusion
         print(f"...done. ABX within : {scores['within']}")
 
     # ABX across
@@ -93,10 +96,12 @@ def ABX(feature_function,
                                              divisor_speaker)
         scores['across'] = (phone_confusion.sum() /
                              (divisor_speaker > 0).sum()).item()
+        extras["group_confusion_across"] = group_confusion
+        extras["phone_confusion_across"] = phone_confusion
 
         print(f"...done. ABX across : {scores['across']}")
 
-    return scores
+    return scores, extras
 
 
 def update_base_parser(parser):
@@ -205,7 +210,7 @@ def main(argv):
     if args.debug:
         seq_list = seq_list[:1000]
 
-    scores = ABX(feature_function, args.path_item_file,
+    scores, extras = ABX(feature_function, args.path_item_file,
                  seq_list, distance_mode,
                  step_feature, modes,
                  cuda=args.cuda,
@@ -223,6 +228,8 @@ def main(argv):
     path_args = out_dir / 'ABX_args.json'
     with open(path_args, 'w') as file:
         json.dump(vars(args), file, indent=2)
+
+    torch.save(extras, out_dir / "extras.pt")
 
 
 if __name__ == "__main__":
