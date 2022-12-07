@@ -546,6 +546,8 @@ def main(argv):
         args.no_artefacts,
         args.batchSizeGPU)
 
+    if args.distributed:
+        torch.distributed.barrier()
 
 def parseArgs(argv):
     # Run parameters
