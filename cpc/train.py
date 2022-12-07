@@ -271,7 +271,7 @@ def main(argv):
             data, logs, locArgs = cdata
             print(f"Checkpoint detected at {data}")
             fl.loadArgs(args, locArgs,
-                        forbiddenAttr={"nGPU", "pathCheckpoint",
+                        forbiddenAttr={"nGPU", "pathCheckpoint", "distributed",
                                        "debug", "restart", "world_size",
                                        "global_rank", "local_rank",
                                        "n_nodes", "node_id", "n_gpu_per_node",
@@ -546,8 +546,6 @@ def main(argv):
         args.no_artefacts,
         args.batchSizeGPU)
 
-    if args.distributed:
-        torch.distributed.barrier()
 
 def parseArgs(argv):
     # Run parameters
