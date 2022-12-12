@@ -11,6 +11,7 @@ from pathlib import Path
 import ABX.abx_group_computation as abx_g
 import ABX.abx_iterators as abx_it
 import torch
+
 from cpc.dataset import findAllSeqs
 from cpc.feature_loader import FeatureModule, buildFeature, loadModel
 
@@ -36,7 +37,11 @@ def ABX(
     ABXDataset = abx_it.ABXFeatureLoader(
         path_item_file, seq_list, feature_function, step_feature, normalize
     )
-    extras = {"phone_match": ABXDataset.phone_match}
+    extras = {
+        "phone_match": ABXDataset.phone_match,
+        "speaker_match": ABXDataset.speaker_match,
+        "context_match": ABXDataset.context_match
+    }
 
     if cuda:
         ABXDataset.cuda()
