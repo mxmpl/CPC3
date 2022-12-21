@@ -272,8 +272,8 @@ def main(argv):
             print(f"Checkpoint detected at {data}")
             fl.loadArgs(args, locArgs,
                         forbiddenAttr={"nGPU", "pathCheckpoint", "distributed",
-                                       "debug", "restart", "world_size",
-                                       "global_rank", "local_rank",
+                                       "debug", "restart", "world_size", "save_step",
+                                       "global_rank", "local_rank", "master_port",
                                        "n_nodes", "node_id", "n_gpu_per_node",
                                        "max_size_loaded", "nEpoch", "save_step"})
             args.load, loadOptimizer = [data], True
