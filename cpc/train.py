@@ -275,7 +275,7 @@ def main(argv):
                                        "debug", "restart", "world_size", "save_step",
                                        "global_rank", "local_rank", "master_port",
                                        "n_nodes", "node_id", "n_gpu_per_node",
-                                       "max_size_loaded", "nEpoch", "save_step"})
+                                       "max_size_loaded", "nEpoch"})
             args.load, loadOptimizer = [data], True
             args.loadCriterion = True
 
