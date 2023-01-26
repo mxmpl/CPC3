@@ -40,7 +40,7 @@ def ABX(
     extras = {
         "phone_match": ABXDataset.phone_match,
         "speaker_match": ABXDataset.speaker_match,
-        "context_match": ABXDataset.context_match
+        "context_match": ABXDataset.context_match,
     }
 
     if cuda:
@@ -155,10 +155,11 @@ def update_base_parser(parser):
         "number of speaker X to sample per couple A,B",
     )
     parser.add_argument(
-        "--out",
-        type=str,
-        default=None,
-        help="Path where the results should be saved",
+        "--max_x_across",
+        type=int,
+        default=5,
+        help="When computing the ABX across score, maximum"
+        "number of speaker X to sample per couple A,B",
     )
     parser.add_argument("--level_gru", type=int, default=None)
 
@@ -220,6 +221,12 @@ def parse_args(argv):
         default=40,
         help="Number of processes to use for group computation",
     )
+    parser_checkpoint.add_argument(
+        "--out",
+        type=str,
+        default=None,
+        help="Path where the results should be saved",
+    )
 
     parser_db = subparsers.add_parser("from_pre_computed")
     update_base_parser(parser_db)
@@ -234,7 +241,12 @@ def parse_args(argv):
         default=".pt",
         help="Extension of each feature " "in the dataset",
     )
-
+    parser_db.add_argument(
+        "--out",
+        type=str,
+        required=True,
+        help="Path where the results should be saved",
+    )
     # multi-gpu / multi-node
     return base_parser.parse_args(argv)
 
