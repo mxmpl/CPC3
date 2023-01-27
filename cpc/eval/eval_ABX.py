@@ -154,13 +154,6 @@ def update_base_parser(parser):
         help="When computing the ABX across score, maximum"
         "number of speaker X to sample per couple A,B",
     )
-    parser.add_argument(
-        "--max_x_across",
-        type=int,
-        default=5,
-        help="When computing the ABX across score, maximum"
-        "number of speaker X to sample per couple A,B",
-    )
     parser.add_argument("--level_gru", type=int, default=None)
 
 
