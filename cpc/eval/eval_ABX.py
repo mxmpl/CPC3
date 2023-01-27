@@ -223,8 +223,13 @@ def parse_args(argv):
 
     parser_db = subparsers.add_parser("from_pre_computed")
     update_base_parser(parser_db)
+    parser_checkpoint.add_argument(
+        "path_item_file",
+        type=str,
+        help="Path to the ABX .item file containing " "the triplets labels",
+    )
     parser_db.add_argument(
-        "path_features",
+        "path_dataset",
         type=str,
         help="Path to pre-computed torch features (.pt)",
     )
