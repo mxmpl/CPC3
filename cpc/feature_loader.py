@@ -2,6 +2,8 @@
 #
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
+from typing import Dict
+from operator import attrgetter
 import torch
 import torchaudio
 import os
@@ -11,6 +13,7 @@ from .cpc_default_config import get_default_cpc_config
 from .dataset import parseSeqLabels
 from .model import CPCModel, ConcatenatedModel, CPCBertModel
 import pickle
+from torch.nn.utils import prune
 
 class FeatureModule(torch.nn.Module):
     r"""
@@ -270,7 +273,10 @@ def loadModel(pathCheckpoints, loadStateDict=True, updateConfig=None):
         if loadStateDict:
             print(f"Loading the state dict at {path}")
             state_dict = torch.load(path, 'cpu')
-            m_.load_state_dict(state_dict["gEncoder"], strict=False)
+            try:
+                m_.load_state_dict(state_dict["gEncoder"])
+            except RuntimeError:
+                load_pruned_state_dict(m_, state_dict["gEncoder"])
         if not doLoad:
             hiddenGar += locArgs.hiddenGar
             hiddenEncoder += locArgs.hiddenEncoder
@@ -282,6 +288,23 @@ def loadModel(pathCheckpoints, loadStateDict=True, updateConfig=None):
 
     return ConcatenatedModel(models), hiddenGar, hiddenEncoder
 
+
+def load_pruned_state_dict(model: torch.nn.Module, state_dict: Dict) -> None:
+    state_dict_pruned_keys = [
+        key.removesuffix("_mask")
+        for key in state_dict.keys()
+        if key.endswith("_mask")
+        and key.removesuffix("_mask") + "_orig" in state_dict.keys()
+    ]
+    to_prune = []
+    for key in state_dict_pruned_keys:
+        parts = key.split(".")
+        module = attrgetter(".".join(parts[:-1]))(model)
+        to_prune.append((module, parts[-1]))
+
+    for module, name in to_prune:
+        prune.identity(module, name)
+    model.load_state_dict(state_dict)
 
 def get_module(i_module):
     if isinstance(i_module, torch.nn.DataParallel):
