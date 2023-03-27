@@ -271,7 +271,10 @@ if __name__ == "__main__":
     if args.load is not None:
         print(f"Loading the clusters from {args.load}")
         start_clusters = torch.load(args.load)["state_dict"]["Ck"]
+        start_iter = int(Path(args.load).stem.removeprefix("checkpoint_"))
         print(start_clusters.size())
+    else:
+        start_iter = 0
     out_state_dict = {}
     print("Starting the clustering...")
     start_time = time.time()
@@ -295,6 +298,7 @@ if __name__ == "__main__":
             args.nGroups,
             perIterSize=args.perIterSize,
             MAX_ITER=args.MAX_ITER,
+            start_iter=start_iter,
             save_dir=args.dirOutput,
             save_last=args.save_last,
             start_clusters=start_clusters,

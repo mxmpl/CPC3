@@ -96,6 +96,7 @@ def kMeanGPU(
     EPSILON=1e-4,
     perIterSize=-1,
     start_clusters=None,
+    start_iter=0,
     save_dir=None,
     save_last=5,
 ):
@@ -135,7 +136,7 @@ def kMeanGPU(
 
     bar = progressbar.ProgressBar(maxval=MAX_ITER)
     bar.start()
-    iter, stored = 0, 0
+    iter, stored = start_iter, 0
     sum_seen = 0
     print("perIterSize = %.f" % perIterSize)
     with torch.no_grad():
