@@ -299,7 +299,7 @@ def eval_ABX_Librispeech(
         max_x_across=5,
         max_size_group=10,
         normalize=True,
-    )
+    )[0]
 
     # save
     if save:
