@@ -431,6 +431,7 @@ if __name__ == "__main__":
             group_modes=args.group_modes,
             onehot_dict=args.onehot_dict,
             seq_norm=args.seq_norm,
+            strict=args.strict,
             max_size_seq=args.max_size_seq
         )
     elif args.quantized:
