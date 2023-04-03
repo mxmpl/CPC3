@@ -260,8 +260,20 @@ def main(argv):
         # Checkpoint
         model = loadModel([args.path_checkpoint], updateConfig=updateConfig)[0]
         model.gAR.keepHidden = True
+        from torch.nn.utils import prune
+        for a in ["conv0", "conv1", "conv2", "conv3", "conv4"]:
+            getattr(model.gEncoder, a).weight_mask = torch.ones_like(getattr(model.gEncoder, a).weight_mask) 
+            getattr(model.gEncoder, a).bias_mask = torch.ones_like(getattr(model.gEncoder, a).bias_mask) 
+            prune.remove(getattr(model.gEncoder, a), "weight")
+            prune.remove(getattr(model.gEncoder, a), "bias")
         # Feature maker
         feature_maker = FeatureModule(model, args.get_encoded).cuda().eval()
+        z, n = 0, 0
+        for _, b in feature_maker.named_buffers():
+            z += b.count_nonzero()
+            n += b.numel()
+        if n != 0:
+            print("Masks", (1-(z/n)).item())
 
         def feature_function(x):
             return buildFeature(
