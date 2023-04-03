@@ -76,8 +76,7 @@ def parseArgs(argv):
     )
     parser.add_argument(
         "--strict",
-        type=bool,
-        default=True,
+        action="store_true",
         help="If activated, each batch of feature "
         "will contain exactly max_size_seq frames (defaut: True).",
     )
