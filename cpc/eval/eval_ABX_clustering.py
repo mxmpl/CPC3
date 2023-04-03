@@ -54,10 +54,16 @@ class ClusteringFeatures:
         keepHidden=True,
         group_modes="concat",
         onehot_dict=None,
+        seq_norm=False,
+        strict=True,
+        max_size_seq=64000,
     ):
 
         self.group_modes = group_modes
         self.soft_clustering = soft_clustering
+        self.max_size_seq = max_size_seq
+        self.seq_norm = seq_norm
+        self.strict = strict
 
         # Load Clustering args
         clustering_path_checkpoint = Path(clustering_path_checkpoint)
@@ -109,7 +115,11 @@ class ClusteringFeatures:
 
     def feature_function(self, x):
         c_feature = buildFeature(
-            self.featureMaker, x, seqNorm=False, strict=True, maxSizeSeq=64000
+            self.featureMaker,
+            x,
+            strict=self.strict,
+            maxSizeSeq=self.max_size_seq,
+            seqNorm=self.seq_norm,
         ).cuda()
         c_feature = c_feature.view(1, -1, self.dim_clusters)
         dist_clusters = self.clusterModule(c_feature)
@@ -351,6 +361,26 @@ if __name__ == "__main__":
         default=-1,
     )
     parser.add_argument(
+        "--seq_norm",
+        action="store_true",
+        help="If activated, normalize each batch "
+        "of feature across the time channel before "
+        "computing ABX.",
+    )
+    parser.add_argument(
+        "--max_size_seq",
+        default=64000,
+        type=int,
+        help="Maximal number of frames to consider "
+        "when computing a batch of features.",
+    )
+    parser.add_argument(
+        "--strict",
+        action="store_true",
+        help="If activated, each batch of feature "
+        "will contain exactly max_size_seq frames.",
+    )
+    parser.add_argument(
         "--file-extension",
         type=str,
         default=".flac"
@@ -400,6 +430,8 @@ if __name__ == "__main__":
             keepHidden=True,
             group_modes=args.group_modes,
             onehot_dict=args.onehot_dict,
+            seq_norm=args.seq_norm,
+            max_size_seq=args.max_size_seq
         )
     elif args.quantized:
         assert (
