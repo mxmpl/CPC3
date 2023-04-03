@@ -54,6 +54,13 @@ def parseArgs(argv):
         help="Extension of the audio files in the dataset (default: .flac).",
     )
     parser.add_argument(
+        "--seq_norm",
+        action="store_true",
+        help="If activated, normalize each batch "
+        "of feature across the time channel before "
+        "computing ABX.",
+    )
+    parser.add_argument(
         "--max_size_seq",
         type=int,
         default=10240,
@@ -69,8 +76,7 @@ def parseArgs(argv):
     )
     parser.add_argument(
         "--strict",
-        type=bool,
-        default=True,
+        action="store_true",
         help="If activated, each batch of feature "
         "will contain exactly max_size_seq frames (defaut: True).",
     )
@@ -229,7 +235,11 @@ def main(argv):
 
         # Get features & quantizing
         cFeatures = buildFeature(
-            featureMaker, file_path, seqNorm=False, strict=args.strict
+            featureMaker,
+            file_path,
+            strict=args.strict,
+            maxSizeSeq=args.max_size_seq,
+            seqNorm=args.seq_norm,
         ).cuda()
 
         nGroups = cFeatures.size(-1) // clusterModule.Ck.size(-1)
