@@ -10,7 +10,7 @@ import cpc.eval.ABX.abx_iterators as abx_it
 import cpc.eval.ABX.abx_group_computation as abx_g
 from cpc.eval.eval_ABX import ABX
 from time import time
-
+import pickle
 
 def write_json(filepath, scores):
     Path(filepath).parent.mkdir(parents=True, exist_ok=True)
@@ -299,7 +299,7 @@ def eval_ABX_Librispeech(
         max_x_across=5,
         max_size_group=10,
         normalize=True,
-    )[0]
+    )
 
     # save
     if save:
@@ -451,7 +451,7 @@ if __name__ == "__main__":
     else:
         feature_size = args.feature_size
 
-    scores = eval_ABX_Librispeech(
+    scores, extras = eval_ABX_Librispeech(
         path_data=args.path_audio_data,
         path_item_file=args.path_abx_item,
         feature_function=FeatureMaker.feature_function,
@@ -460,5 +460,19 @@ if __name__ == "__main__":
         distance_mode="cosine",
         file_extension=args.file_extension,
         debug=args.debug,
-        path_output=args.name_output,
+        path_output=None,
     )
+
+    out_dir = Path(args.name_output)
+    out_dir.mkdir(exist_ok=True)
+
+    path_score = out_dir / "ABX_scores.json"
+    with open(path_score, "w") as file:
+        json.dump(scores, file, indent=2)
+
+    path_args = out_dir / "ABX_args.json"
+    with open(path_args, "w") as file:
+        json.dump(vars(args), file, indent=2)
+
+    with open(out_dir / "extras.pkl", "wb") as file:
+        pickle.dump(extras, file)
