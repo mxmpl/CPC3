@@ -282,9 +282,9 @@ def main(argv):
 
             def feature_function(x: str) -> torch.Tensor:
                 c_feature = base_features(x)
-                dist_clusters = cluster_module(c_feature)
+                dist_clusters = cluster_module(c_feature.cuda())
                 q_feature = torch.argmin(dist_clusters, dim=-1)
-                return cluster_module.Ck[:, q_feature.squeeze()]
+                return cluster_module.Ck[:, q_feature.squeeze()].cpu()
 
         else:
             feature_function = base_features
