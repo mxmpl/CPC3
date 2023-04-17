@@ -12,6 +12,7 @@ import ABX.abx_group_computation as abx_g
 import ABX.abx_iterators as abx_it
 import torch
 
+from cpc.clustering.clustering import loadClusterModule
 from cpc.dataset import findAllSeqs
 from cpc.feature_loader import FeatureModule, buildFeature, loadModel
 
@@ -220,6 +221,11 @@ def parse_args(argv):
         default=None,
         help="Path where the results should be saved",
     )
+    parser_checkpoint.add_argument(
+        "--from_centroid",
+        type=str,
+        help="Path to the clustering module if you want to use centroid features"
+    )
 
     parser_db = subparsers.add_parser("from_pre_computed")
     update_base_parser(parser_db)
@@ -263,7 +269,7 @@ def main(argv):
         # Feature maker
         feature_maker = FeatureModule(model, args.get_encoded).cuda().eval()
 
-        def feature_function(x):
+        def base_features(x):
             return buildFeature(
                 feature_maker,
                 x,
@@ -271,6 +277,17 @@ def main(argv):
                 strict=args.strict,
                 maxSizeSeq=args.max_size_seq,
             )
+        if args.from_centroid is not None:
+            cluster_module = loadClusterModule(args.from_centroid)
+
+            def feature_function(x: str) -> torch.Tensor:
+                c_feature = base_features(x)
+                dist_clusters = cluster_module(c_feature)
+                q_feature = torch.argmin(dist_clusters, dim=-1)
+                return cluster_module.Ck[:, q_feature.squeeze()]
+
+        else:
+            feature_function = base_features
 
     elif args.load == "from_pre_computed":
 
