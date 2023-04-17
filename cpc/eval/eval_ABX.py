@@ -284,7 +284,7 @@ def main(argv):
                 c_feature = base_features(x)
                 dist_clusters = cluster_module(c_feature.cuda())
                 q_feature = torch.argmin(dist_clusters, dim=-1)
-                return cluster_module.Ck[:, q_feature.squeeze()].cpu()
+                return cluster_module.Ck[:, q_feature.squeeze()]
 
         else:
             feature_function = base_features
