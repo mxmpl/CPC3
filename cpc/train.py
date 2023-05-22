@@ -23,6 +23,11 @@ from cpc.distributed_training.distributed_mode import init_distributed_mode
 from cpc.dataset import AudioBatchData, findAllSeqs, filterSeqs, parseSeqLabels, \
     PeakNorm
 
+import numpy as np
+from torch.nn.utils.prune import L1Unstructured
+from torch import nn
+from pnarrow.pruning import GlobalUnstructuredPruning, GradualPruning, sparsity
+
 torch.multiprocessing.set_sharing_strategy('file_system')
 
 def getCriterion(args, downsampling, nSpeakers, nPhones):
@@ -208,10 +213,16 @@ def run(trainDataset,
     bestStateDict = None
     start_time = time.time()
 
+    pruning_schedule = GradualPruning(pruning_freq=1, pruning_end_step=nEpoch-1, pruning_start_step=100, target_sparsity=0.9)
     for epoch in range(startEpoch, nEpoch):
 
         print(f"Starting epoch {epoch}")
         utils.cpu_stats()
+
+        if pruning_schedule.is_pruning_step(epoch):
+            pruning_scheme = GlobalUnstructuredPruning(L1Unstructured, pruning_schedule(cpcModel, epoch), [nn.Conv1d, nn.LSTM])
+            pruning_scheme(cpcModel)
+            assert np.isclose(pruning_schedule.sparsity_at_step(epoch), sparsity(cpcModel)[0])
 
         trainLoader = trainDataset.getDataLoader(batchSize, samplingMode,
                                                  True, numWorkers=0,
