@@ -276,10 +276,11 @@ def main(argv):
                                        "global_rank", "local_rank", "master_port",
                                        "n_nodes", "node_id", "n_gpu_per_node",
                                        "max_size_loaded", "nEpoch"})
-            args.load, loadOptimizer = [data], True
+            args.load, loadOptimizer = [data], False
             args.loadCriterion = True
 
     logs["logging_step"] = args.logging_step
+    print(f"START EPOCH BEGINNING {len(logs['epoch'])}")
 
     if args.nGPU == 0:
         args.nGPU = 1
@@ -490,6 +491,8 @@ def main(argv):
         if "optimizer" in state_dict:
             optimizer.load_state_dict(state_dict["optimizer"])
 
+    else:
+        print("NOT LOADING OPTIMIZER AS EXPECTED")
     # Checkpoint
     if args.pathCheckpoint is not None:
         Path(args.pathCheckpoint).mkdir(exist_ok=True)
